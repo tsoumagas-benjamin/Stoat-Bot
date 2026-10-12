@@ -99,16 +99,17 @@ class Audit(commands.Gear, name="Audit"):
         embed_footer = f"Channel ID: {target_channel.id} | {self.date_format(datetime.now(tz=pytz.utc))}"
 
         # Check if channel is a text or voice channel, create the embed for each
+        category = target_channel.category.title
         if target_channel.voice is None:
             create_channel = stoat.SendableEmbed(
                 title="Text Channel Created",
-                description=f"Name {target_channel.name}\nCategory {target_channel.category.title}\n{embed_footer}",
+                description=f"Name {target_channel.name}\nCategory {category if category else 'N/A'}\n{embed_footer}",
                 color="green",
             )
         else:
             create_channel = stoat.SendableEmbed(
                 title="Voice Channel Created",
-                description=f"Name {target_channel.name}\nCategory {target_channel.category.title}\n{embed_footer}",
+                description=f"Name {target_channel.name}\nCategory {category if category else 'N/A'}\n{embed_footer}",
                 color="green",
             )
 
@@ -127,7 +128,7 @@ class Audit(commands.Gear, name="Audit"):
         with db.cursor() as cur:
             # If the removed channel is stored in the database, remove it
             cur.execute(
-                "DELETE * FROM channels WHERE (server_id, channel_id) = (%s, %s)",
+                "DELETE FROM channels WHERE (server_id, channel_id) = (%s, %s)",
                 (target_channel.server_id, target_channel.id),
             )
             db.commit()
@@ -201,16 +202,17 @@ class Audit(commands.Gear, name="Audit"):
         embed_footer = f"Channel ID: {target_channel.id} | {self.date_format(datetime.now(tz=pytz.utc))}"
 
         # Check if channel is a text or voice channel, create the embed for each
+        category = target_channel.category.title
         if target_channel.voice is None:
             update_channel = stoat.SendableEmbed(
                 title="Text Channel Updated",
-                description=f"Name {target_channel.name}\nCategory {target_channel.category.title}\n{attribute_changes}\n{embed_footer}",
+                description=f"Name {target_channel.name}\nCategory {category if category else 'N/A'}\n{attribute_changes}\n{embed_footer}",
                 color="purple",
             )
         else:
             update_channel = stoat.SendableEmbed(
                 title="Voice Channel Updated",
-                description=f"Name {target_channel.name}\nCategory {target_channel.category.title}\n{attribute_changes}\n{embed_footer}",
+                description=f"Name {target_channel.name}\nCategory {category if category else 'N/A'}\n{attribute_changes}\n{embed_footer}",
                 color="purple",
             )
 
