@@ -79,23 +79,19 @@ class Trivia(commands.Gear, name="Trivia"):
         def check_answer(
             self, user_id: str, username: str, message_id: str, emoji: str
         ):
-            if user_id in self.responders:
-                print("User already responded")
-            elif message_id != self.message.id:
-                print("Wrong message")
-            elif emoji not in self.choices:
-                print("Wrong emoji")
+            if (
+                (user_id in self.responders)
+                or (message_id != self.message_id)
+                or (emoji not in self.choices)
+            ):
+                return
             else:
                 self.responders.append(user_id)
-                print("Valid")
                 if emoji == self.correct:
-                    print("Correct")
                     if user_id in self.score:
                         self.score[user_id] += 1
                     else:
                         self.score[user_id] = 1
-                else:
-                    print("Incorrect")
 
         def generate_options(self):
             options = self.wrong.copy()
@@ -121,7 +117,6 @@ class Trivia(commands.Gear, name="Trivia"):
                 await self.message.react(choice)
 
         def round_score(self):
-            print(self.score)
             return self.score
 
     @commands.Gear.listener()
@@ -130,7 +125,6 @@ class Trivia(commands.Gear, name="Trivia"):
             return
         user: stoat.User = await self.bot.fetch_user(to.user_id)
         self.responses[to.user_id] = [user.name, to.message_id, to.emoji]
-        print(self.responses)
 
     @commands.command()
     async def trivia(self, ctx: commands.Context):
