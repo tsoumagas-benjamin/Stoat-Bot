@@ -145,16 +145,18 @@ class Progress(commands.Gear, name="Progress"):
                 level = user[0]
                 if level > 1000:
                     return
-                xp = user[1] + self.give_xp(on.message)
-                if self.level_up(xp, level):
-                    level += 1
-                    xp = 0
+                earned_xp = self.give_xp(on.message)
+                if earned_xp:
+                    xp = user[1] + self.give_xp(on.message)
+                    if self.level_up(xp, level):
+                        level += 1
+                        xp = 0
+                    cur.execute(
+                        "UPDATE members SET (level, xp) = (%s, %s) WHERE (user_id, server_id) = (%s, %s)",
+                        (level, xp, author.id, server.id),
+                    )
+                    db.commit()
                     await self.card_maker(channel, author.id, server.id)
-                cur.execute(
-                    "UPDATE members SET (level, xp) = (%s, %s) WHERE (user_id, server_id) = (%s, %s)",
-                    (level, xp, author.id, server.id),
-                )
-                db.commit()
 
     @commands.command()
     async def level(
