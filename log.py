@@ -5,9 +5,7 @@ import sys
 
 class LogFilter(logging.Filter):
     def filter(self, record):
-        black_list = [
-            "Handling Pong",
-        ]
+        black_list = ["Handling Pong", "ShardEvent", "BaseEvent"]
         return not any(banned_str in record.getMessage() for banned_str in black_list)
 
 
