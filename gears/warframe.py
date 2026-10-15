@@ -15,8 +15,6 @@ from utilities import (
 )
 
 # Credit to the WFCD for the Warframe worldstate parser API found here: https://api.warframestat.us/pc
-# TODO: Fix timers to be like fun gear, those work, these seem to pass channel_id as a tuple to fetch_channel
-# Keep in mind, these functions may return text not embeds!
 
 
 class Warframe(commands.Gear, name="Warframe"):
