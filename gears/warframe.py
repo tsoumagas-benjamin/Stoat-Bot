@@ -10,10 +10,13 @@ from utilities import (
     ChaosBot,
     db,
     epoch_convert,
+    send_embed,
     string_split,
 )
 
 # Credit to the WFCD for the Warframe worldstate parser API found here: https://api.warframestat.us/pc
+# TODO: Fix timers to be like fun gear, those work, these seem to pass channel_id as a tuple to fetch_channel
+# Keep in mind, these functions may return text not embeds!
 
 
 class Warframe(commands.Gear, name="Warframe"):
@@ -494,35 +497,28 @@ class Warframe(commands.Gear, name="Warframe"):
     async def archimedea_timer(self):
         # Send the content to each of the daily warframe channels
         for channel_id in self.daily_wf_channels:
-            daily_wf_channel = self.bot.get_channel(channel_id)
-            if daily_wf_channel is None:
-                daily_wf_channel = await self.bot.fetch_channel(channel_id)
-            await daily_wf_channel.send(await self.deep_archimedea_status())
-            await daily_wf_channel.send(await self.temporal_archimedea_status())
+            da_embed = await self.deep_archimedea_status()
+            ta_embed = await self.temporal_archimedea_status()
+            await send_embed(self.bot, channel_id, da_embed)
+            await send_embed(self.bot, channel_id, ta_embed)
 
     async def archon_timer(self):
         # Send the content to each of the daily warframe channels
         for channel_id in self.daily_wf_channels:
-            daily_wf_channel = self.bot.get_channel(channel_id)
-            if daily_wf_channel is None:
-                daily_wf_channel = await self.bot.fetch_channel(channel_id)
-            await daily_wf_channel.send(await self.archon_hunt())
+            archon_embed = await self.archon_hunt()
+            await send_embed(self.bot, channel_id, archon_embed)
 
     async def baro_timer(self):
         # Send the content to each of the daily warframe channels
         for channel_id in self.daily_wf_channels:
-            daily_wf_channel = self.bot.get_channel(channel_id)
-            if daily_wf_channel is None:
-                daily_wf_channel = await self.bot.fetch_channel(channel_id)
-            await daily_wf_channel.send(await self.baro_kiteer())
+            baro_embed = await self.baro_kiteer()
+            await send_embed(self.bot, channel_id, baro_embed)
 
     async def duviri_timer(self):
         # Send the content to each of the daily warframe channels
         for channel_id in self.daily_wf_channels:
-            daily_wf_channel = self.bot.get_channel(channel_id)
-            if daily_wf_channel is None:
-                daily_wf_channel = await self.bot.fetch_channel(channel_id)
-            await daily_wf_channel.send(await self.duviri_status())
+            duviri_embed = await self.duviri_status()
+            await send_embed(self.bot, channel_id, duviri_embed)
 
     @commands.command()
     async def alerts(self, ctx: commands.Context):

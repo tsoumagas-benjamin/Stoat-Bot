@@ -187,13 +187,11 @@ def epoch_convert(date_string: str):
 
 
 # Function to send embeds to the designated channel
-async def send_embed(
-    bot: commands.Bot, audit_channel_id: str, target_embed: SendableEmbed
-):
-    audit_channel = bot.get_channel(audit_channel_id)
-    if audit_channel is None:
-        audit_channel = await bot.fetch_channel(audit_channel_id)
-    await audit_channel.send(embeds=[target_embed])
+async def send_embed(bot: commands.Bot, channel_id: str, target_embed: SendableEmbed):
+    target_channel = bot.get_channel(channel_id)
+    if target_channel is None:
+        target_channel = await bot.fetch_channel(channel_id)
+    await target_channel.send(embeds=[target_embed])
 
 
 # Function to put spaces before capitals in strings

@@ -13,6 +13,7 @@ from utilities import (
     ChaosBot,
     check_permitted_servers,
     db,
+    send_embed,
     target_games,
 )
 
@@ -188,12 +189,10 @@ class Sales(commands.Gear, name="Sales"):
 
     # Function to send formatted content to sales channels
     async def send_sale_info(self, sale_embed: stoat.SendableEmbed):
+        sales_channels = self.fetch_sales_channels()
         # Send a meme to each of the daily channels
-        for channel_id in self.fetch_sales_channels():
-            sales_channel = self.bot.get_channel(channel_id)
-            if sales_channel is None:
-                sales_channel = await self.bot.fetch_channel(channel_id)
-            await sales_channel.send(embeds=[sale_embed()])
+        for channel_id in sales_channels:
+            await send_embed(self.bot, channel_id, sale_embed)
 
     # Function to store information on a game's sale cut and expiry in the database
     async def store_sale(self, game_id: str, cut: int, expiry_date: date):

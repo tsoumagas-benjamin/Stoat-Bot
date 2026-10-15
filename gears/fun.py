@@ -10,7 +10,7 @@ from apscheduler.triggers.cron import CronTrigger
 from stoat.ext import commands
 from youtubesearchpython.future import VideosSearch
 
-from utilities import ChaosBot, db
+from utilities import ChaosBot, db, send_embed
 
 
 class Fun(commands.Gear, name="Fun"):
@@ -116,10 +116,7 @@ class Fun(commands.Gear, name="Fun"):
         daily_channels = self.fetch_daily_channels()
         # Send a meme to each of the daily channels
         for channel_id in daily_channels:
-            daily_channel = self.bot.get_channel(channel_id)
-            if daily_channel is None:
-                daily_channel = await self.bot.fetch_channel(channel_id)
-            await daily_channel.send(embeds=[task_embed])
+            await send_embed(self.bot, channel_id, task_embed)
 
     async def daily_animal(self):
         # Gets daily animal
