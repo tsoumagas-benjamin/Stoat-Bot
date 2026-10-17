@@ -6,7 +6,7 @@ import pytz
 import stoat
 from stoat.ext import commands
 
-from utilities import ChaosBot, db, send_embed
+from utilities import ChaosBot, db, send_content
 
 
 # Create a gear for audit log functionality
@@ -114,7 +114,7 @@ class Audit(commands.Gear, name="Audit"):
             )
 
         # Send the embed to the designated channel
-        return await send_embed(self.bot, server_audit_log, create_channel)
+        return await send_content(self.bot, server_audit_log, create_channel)
 
     # Record when a server channel is deleted
     @commands.Gear.listener()
@@ -155,7 +155,7 @@ class Audit(commands.Gear, name="Audit"):
             )
 
         # Send the embed to the designated channel
-        return await send_embed(self.bot, server_audit_log, delete_channel)
+        return await send_content(self.bot, server_audit_log, delete_channel)
 
     # Record when a server channel is updated
     @commands.Gear.listener()
@@ -217,7 +217,7 @@ class Audit(commands.Gear, name="Audit"):
             )
 
         # Send the embed to the designated channel
-        return await send_embed(self.bot, server_audit_log, update_channel)
+        return await send_content(self.bot, server_audit_log, update_channel)
 
     # Record when a server role is deleted
     @commands.Gear.listener()
@@ -234,7 +234,7 @@ class Audit(commands.Gear, name="Audit"):
         )
 
         # Send the embed to the designated channel
-        return await send_embed(self.bot, server_audit_log, delete_role)
+        return await send_content(self.bot, server_audit_log, delete_role)
 
     # Record when a server role is updated
     @commands.Gear.listener()
@@ -257,7 +257,7 @@ class Audit(commands.Gear, name="Audit"):
             )
 
             # Send the embed to the designated channel
-            await send_embed(self.bot, server_audit_log["channel"], create_role)
+            await send_content(self.bot, server_audit_log["channel"], create_role)
 
         else:
             # Compare specific attributes of the role before and after the update
@@ -285,7 +285,7 @@ class Audit(commands.Gear, name="Audit"):
             )
 
             # Send the embed to the designated channel
-            await send_embed(self.bot, server_audit_log, update_role)
+            await send_content(self.bot, server_audit_log, update_role)
 
     # Record when a server updates
     @commands.Gear.listener()
@@ -349,7 +349,7 @@ class Audit(commands.Gear, name="Audit"):
         )
 
         # Send the embed to the designated channel
-        await send_embed(self.bot, server_audit_log, update_server)
+        await send_content(self.bot, server_audit_log, update_server)
 
     # Record when an emoji is removed, added, or updated
     @commands.Gear.listener()
@@ -399,8 +399,7 @@ class Audit(commands.Gear, name="Audit"):
                 for emoji in on.after.emojis
                 if emoji not in on.before.emojis
             }
-            updated = {emoji.id: emoji for emoji in on.server.emojis}
-            print(updated)
+
             for emoji in removed.values():
                 emoji_changes += f"{emoji.name} -> "
             for emoji in added.values():
@@ -409,7 +408,7 @@ class Audit(commands.Gear, name="Audit"):
                 title="Emoji Updated", description=emoji_changes, color="purple"
             )
 
-        await send_embed(self.bot, server_audit_log, emoji_update)
+        await send_content(self.bot, server_audit_log, emoji_update)
 
     # Record when a member's roles, display name, or server avatar are updated
     @commands.Gear.listener()
@@ -478,7 +477,7 @@ class Audit(commands.Gear, name="Audit"):
             )
 
         # Send the embed to the designated channel
-        await send_embed(self.bot, server_audit_log, member_update)
+        await send_content(self.bot, server_audit_log, member_update)
 
     # Records when a member is banned
     @commands.Gear.listener()
@@ -500,7 +499,7 @@ class Audit(commands.Gear, name="Audit"):
         )
 
         # Send the embed to the designated channel
-        await send_embed(self.bot, server_audit_log, member_ban)
+        await send_content(self.bot, server_audit_log, member_ban)
 
     # Records when a message is deleted
     @commands.Gear.listener()
@@ -532,7 +531,7 @@ class Audit(commands.Gear, name="Audit"):
         )
 
         # Send the embed to the designated channel
-        await send_embed(self.bot, server_audit_log, message_delete)
+        await send_content(self.bot, server_audit_log, message_delete)
 
     # Records when a message is edited
     @commands.Gear.listener()
@@ -577,7 +576,7 @@ class Audit(commands.Gear, name="Audit"):
         )
 
         # Send the embed to the designated channel
-        await send_embed(self.bot, server_audit_log, message_edit)
+        await send_content(self.bot, server_audit_log, message_edit)
 
     # Records when a member joins
     @commands.Gear.listener()
@@ -603,7 +602,7 @@ class Audit(commands.Gear, name="Audit"):
         )
 
         # Send the embed to the designated channel
-        await send_embed(self.bot, server_audit_log, member_join)
+        await send_content(self.bot, server_audit_log, member_join)
 
     # Records when a member leaves
     @commands.Gear.listener()
@@ -638,7 +637,7 @@ class Audit(commands.Gear, name="Audit"):
         )
 
         # Send the embed to the designated channel
-        await send_embed(self.bot, server_audit_log, member_remove)
+        await send_content(self.bot, server_audit_log, member_remove)
 
 
 async def setup(bot: ChaosBot):
