@@ -169,7 +169,7 @@ class Progress(commands.Gear, name="Progress"):
                 """SELECT level, xp FROM members WHERE (user_id, server_id) = (%s, %s)""",
                 (person.id, ctx.server.id),
             )
-            record = cur.fetchone()[0]
+            record = cur.fetchone()
 
         # Return XP and level or nothing if user is not registered
         if not record:
