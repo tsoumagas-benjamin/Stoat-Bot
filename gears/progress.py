@@ -18,15 +18,12 @@ class Progress(commands.Gear, name="Progress"):
         self.bot = bot
 
     async def card_maker(
-        self, channel: stoat.TextableChannel, user_id: str, server_id: str
+        self,
+        channel: stoat.TextableChannel,
+        user_id: str,
+        level: int,
+        xp: int,
     ):
-        # Get user information from ID
-        with db.cursor() as cur:
-            cur.execute(
-                """SELECT level, xp FROM members WHERE (user_id, server_id) = (%s, %s) LIMIT 1""",
-                (user_id, server_id),
-            )
-            level, xp = cur.fetchone()
         if self.bot.get_user(user_id):
             user = self.bot.get_user(user_id)
         else:
@@ -151,12 +148,12 @@ class Progress(commands.Gear, name="Progress"):
                     if self.level_up(xp, level):
                         level += 1
                         xp = 0
+                        await self.card_maker(channel, author.id, level, xp)
                     cur.execute(
                         "UPDATE members SET (level, xp) = (%s, %s) WHERE (user_id, server_id) = (%s, %s)",
                         (level, xp, author.id, server.id),
                     )
                     db.commit()
-                    await self.card_maker(channel, author.id, server.id)
 
     @commands.command()
     async def level(
@@ -178,7 +175,7 @@ class Progress(commands.Gear, name="Progress"):
         if not record:
             return await ctx.send(f"{person.name} has no levels or XP!")
         else:
-            return await self.card_maker(ctx.channel, person.id, ctx.server.id)
+            return await self.card_maker(ctx.channel, person.id, record[0], record[1])
 
     @commands.command()
     async def leaderboard(self, ctx: commands.Context):
