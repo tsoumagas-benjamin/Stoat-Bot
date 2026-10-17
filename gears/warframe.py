@@ -10,7 +10,7 @@ from utilities import (
     ChaosBot,
     db,
     epoch_convert,
-    send_embed,
+    send_content,
     string_split,
 )
 
@@ -117,19 +117,27 @@ class Warframe(commands.Gear, name="Warframe"):
     async def gear_load(self):
         self.bot.scheduler.add_job(
             self.archimedea_timer,
-            trigger=CronTrigger(day_of_week=6, hour=21, timezone=pytz.UTC),
+            trigger=CronTrigger(
+                day_of_week=6, hour=21, timezone=pytz.timezone("Canada/Eastern")
+            ),
         )
         self.bot.scheduler.add_job(
             self.archon_timer,
-            trigger=CronTrigger(day_of_week=6, hour=21, timezone=pytz.UTC),
+            trigger=CronTrigger(
+                day_of_week=6, hour=21, timezone=pytz.timezone("Canada/Eastern")
+            ),
         )
         self.bot.scheduler.add_job(
             self.baro_timer,
-            trigger=CronTrigger(day_of_week=4, hour=10, timezone=pytz.UTC),
+            trigger=CronTrigger(
+                day_of_week=4, hour=10, timezone=pytz.timezone("Canada/Eastern")
+            ),
         )
         self.bot.scheduler.add_job(
             self.duviri_timer,
-            trigger=CronTrigger(day_of_week=6, hour=21, timezone=pytz.UTC),
+            trigger=CronTrigger(
+                day_of_week=6, hour=21, timezone=pytz.timezone("Canada/Eastern")
+            ),
         )
 
     def fetch_warframe_channels(self) -> list[str]:
@@ -265,7 +273,7 @@ class Warframe(commands.Gear, name="Warframe"):
                 name = item["item"]
 
                 # Format everything into one line and append it to the list
-                baro_list += f"{name} - {ducats} D {wf_credits} C\n"
+                baro_list += f"\n{name} {ducats}D {wf_credits}C"
 
         return baro_list
 
@@ -346,6 +354,9 @@ class Warframe(commands.Gear, name="Warframe"):
 
         # Access specifically the information about Duviri
         duviri = wf_world["duviriCycle"]
+        duviri_start = epoch_convert(duviri["activation"])
+        duviri_end = epoch_convert(duviri["expiry"])
+        duviri_duration = f"{duviri_start} - {duviri_end}"
 
         # Look in both regular and steel path variants for reward choices
         regular_choices = duviri["choices"][0]["choices"]
@@ -363,7 +374,7 @@ class Warframe(commands.Gear, name="Warframe"):
         duviri_regular = "\n".join(rewards)
         duviri_steel_path = "\n".join(sp_rewards)
 
-        duviri_info = "Weekly Duviri Rewards\n"
+        duviri_info = f"Weekly Duviri Rewards {duviri_duration}\n"
         duviri_info += f"**Circuit Rewards** (Choose one)\n{duviri_regular}\n"
         duviri_info += (
             f"**Steel Path Circuit Rewards** (Choose two)\n{duviri_steel_path}\n"
@@ -497,26 +508,26 @@ class Warframe(commands.Gear, name="Warframe"):
         for channel_id in self.daily_wf_channels:
             da_embed = await self.deep_archimedea_status()
             ta_embed = await self.temporal_archimedea_status()
-            await send_embed(self.bot, channel_id, da_embed)
-            await send_embed(self.bot, channel_id, ta_embed)
+            await send_content(self.bot, channel_id[0], da_embed)
+            await send_content(self.bot, channel_id[0], ta_embed)
 
     async def archon_timer(self):
         # Send the content to each of the daily warframe channels
         for channel_id in self.daily_wf_channels:
             archon_embed = await self.archon_hunt()
-            await send_embed(self.bot, channel_id, archon_embed)
+            await send_content(self.bot, channel_id[0], archon_embed)
 
     async def baro_timer(self):
         # Send the content to each of the daily warframe channels
         for channel_id in self.daily_wf_channels:
             baro_embed = await self.baro_kiteer()
-            await send_embed(self.bot, channel_id, baro_embed)
+            await send_content(self.bot, channel_id[0], baro_embed)
 
     async def duviri_timer(self):
         # Send the content to each of the daily warframe channels
         for channel_id in self.daily_wf_channels:
             duviri_embed = await self.duviri_status()
-            await send_embed(self.bot, channel_id, duviri_embed)
+            await send_content(self.bot, channel_id[0], duviri_embed)
 
     @commands.command()
     async def alerts(self, ctx: commands.Context):
