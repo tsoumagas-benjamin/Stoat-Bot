@@ -10,7 +10,7 @@ from apscheduler.triggers.cron import CronTrigger
 from stoat.ext import commands
 from youtubesearchpython.future import VideosSearch
 
-from utilities import ChaosBot, db, send_embed
+from utilities import ChaosBot, db, send_content
 
 
 class Fun(commands.Gear, name="Fun"):
@@ -26,19 +26,19 @@ class Fun(commands.Gear, name="Fun"):
     async def gear_load(self):
         self.bot.scheduler.add_job(
             func=self.daily_positivity,
-            trigger=CronTrigger(hour=8, timezone=pytz.UTC),
+            trigger=CronTrigger(hour=8, timezone=pytz.timezone("Canada/Eastern")),
         )
         self.bot.scheduler.add_job(
             func=self.daily_animal,
-            trigger=CronTrigger(hour=12, timezone=pytz.UTC),
+            trigger=CronTrigger(hour=12, timezone=pytz.timezone("Canada/Eastern")),
         )
         self.bot.scheduler.add_job(
             func=self.daily_joke,
-            trigger=CronTrigger(hour=16, timezone=pytz.UTC),
+            trigger=CronTrigger(hour=16, timezone=pytz.timezone("Canada/Eastern")),
         )
         self.bot.scheduler.add_job(
             func=self.daily_meme,
-            trigger=CronTrigger(hour=20, timezone=pytz.UTC),
+            trigger=CronTrigger(hour=20, timezone=pytz.timezone("Canada/Eastern")),
         )
 
     def fetch_daily_channels(self) -> list[str]:
@@ -111,27 +111,21 @@ class Fun(commands.Gear, name="Fun"):
         return quote
 
     # Function to send content to all the daily channels
-    async def send_dailies(self, task_embed: stoat.SendableEmbed):
+    async def send_dailies(self, content):
         # Fetch the list of enrolled channels to post daily content to
         daily_channels = self.fetch_daily_channels()
         # Send a meme to each of the daily channels
         for channel_id in daily_channels:
-            await send_embed(self.bot, channel_id, task_embed)
+            await send_content(self.bot, channel_id[0], content)
 
     async def daily_animal(self):
         # Gets daily animal
         try:
             # Create daily animal post
-
             animal_picture = await self.get_animal()
-            animal = stoat.SendableEmbed(
-                title="😊\tHere's your cute animal of the day!\t😊",
-                description=animal_picture,
-                color="blue",
-            )
 
             # Get the animal embed and send it to each daily channel
-            await self.send_dailies(animal)
+            await self.send_dailies(animal_picture)
 
         except Exception as e:
             print(f"The animal task error is: {e}")
@@ -150,7 +144,7 @@ class Fun(commands.Gear, name="Fun"):
             await self.send_dailies(joke_embed)
 
         except Exception as e:
-            print(f"The animal task error is: {e}")
+            print(f"The joke task error is: {e}")
 
     async def daily_meme(self):
         try:
