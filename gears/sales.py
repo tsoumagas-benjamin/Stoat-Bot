@@ -13,7 +13,7 @@ from utilities import (
     ChaosBot,
     check_permitted_servers,
     db,
-    send_embed,
+    send_content,
     target_games,
 )
 
@@ -29,10 +29,12 @@ class Sales(commands.Gear, name="Sales"):
 
     async def gear_load(self):
         self.bot.scheduler.add_job(
-            self.get_sales, trigger=CronTrigger(hour=12, timezone=pytz.UTC)
+            self.get_sales,
+            trigger=CronTrigger(hour=8, timezone=pytz.timezone("Canada/Eastern")),
         )
         self.bot.scheduler.add_job(
-            self.prune_sales, trigger=CronTrigger(hour=0, timezone=pytz.UTC)
+            self.prune_sales,
+            trigger=CronTrigger(hour=0, timezone=pytz.timezone("Canada/Eastern")),
         )
 
     def fetch_sales_channels(self) -> list[str]:
@@ -192,7 +194,7 @@ class Sales(commands.Gear, name="Sales"):
         sales_channels = self.fetch_sales_channels()
         # Send a meme to each of the daily channels
         for channel_id in sales_channels:
-            await send_embed(self.bot, channel_id, sale_embed)
+            await send_content(self.bot, channel_id[0], sale_embed)
 
     # Function to store information on a game's sale cut and expiry in the database
     async def store_sale(self, game_id: str, cut: int, expiry_date: date):
@@ -244,11 +246,11 @@ class Sales(commands.Gear, name="Sales"):
 
             # Replace previous sale if new sale is better
             if current_best_cut > previous_cut:
-                self.store_sale(game_id, current_best_cut, formatted_expiry)
+                await self.store_sale(game_id, current_best_cut, formatted_expiry)
 
         # If a sale is not already recorded, record the new one
         else:
-            self.store_sale(game_id, current_best_cut, formatted_expiry)
+            await self.store_sale(game_id, current_best_cut, formatted_expiry)
 
     # Function to set sales channel for this server
     @commands.command()
