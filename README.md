@@ -4,13 +4,11 @@
 ![Python](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 
-This repo is a personal project to develop my skills and make a bot for Discord/Stoat. Previously made with Nextcord, MongoDB, and hosted on Fly.io (previously Heroku), now migrated to Stoat.py, PostgreSQL, and intended to be locally hosted. Currently being maintained/developed!
+This repo is a personal project to develop my skills and make a bot for Stoat. Previously made with Nextcord, MongoDB, and hosted on Fly.io (previously Heroku), it is now migrated to Stoat.py, PostgreSQL, and intended to be locally hosted. Currently being maintained/developed!
 
 The library used is [Stoat.py](https://github.com/MCausc78/stoat.py).
 
 Stoat.py documentation: https://stoatpy.readthedocs.io/en/latest/index.html
-
-📺 Python Discord Tutorial: https://www.youtube.com/playlist?list=PL9YUC9AZJGFG6larkQJYio_f0V-O1NRjy
 
 
 ## How to use
@@ -23,7 +21,7 @@ mkdir my-stoat-bot
 cd my-stoat-bot
 # Initialize the folder as a git repository and clone the repo
 git init
-git clone https://github.com/tsoumagas-benjamin/NextcordBot.git
+git clone https://github.com/tsoumagas-benjamin/StoatBot.git
 ```
 
 ## Environment variables
@@ -40,20 +38,51 @@ The contents should look something like this (where the part after `=` is the to
 STOAT_TOKEN="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ```
 
-If you require additional API keys or variables specific to an environment, they should also be added here. You can access them by adding a line such as `SERVER_ID = os.getenv("SERVER_ID", "")`.
+If you require additional API keys or variables specific to an environment, they should also be added here. You can access them by adding a line such as `SERVER_ID = os.getenv("SERVER_ID")`.
 
-Once you have everything set up you should be able to run everything using `python main.py` using a terminal from the folder containing `main.py`
+Once you have everything set up you should be able to run everything using `python main.py` or `python3 main.py` using a terminal from the folder containing `main.py`
 
-## IDE Configuration
+## PostgreSQL Database Setup
 
-IDE config such as the `.vscode` folder do not normally belong on GitHub since they are often specific to a particular environment. To make sure GitHub will ignore the `.vscode` folder uncomment the line at the end of the `.gitignore`.
+- You will have to set up a PostgreSQL server if you are running this locally. I'm on an Arch-based distro so I followed this guide by Nick McSweeney: https://gist.github.com/NickMcSweeney/3444ce99209ee9bd9393ae6ab48599d8
+    - You can then further modify this database using either the Python library psycopg (https://www.psycopg.org/) or a database admin of your choice such as  pgAdmin or DBeaver.
+    - Note that your database must be active to interact with it so follow Nick's guide above to ensure that!
+
+- To setup your PostgreSQL database with the correct schema once you have created a database you can use this script:
+
+```sql
+CREATE TABLE IF NOT EXISTS servers (
+    server_id VARCHAR(26) PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS channels (
+    server_id VARCHAR(26),
+    category VARCHAR(8) CONSTRAINT category_check CHECK (category IN ('audit', 'daily', 'sales', 'warframe')),
+    channel_id VARCHAR(26) NOT NULL,
+    PRIMARY KEY(server_id, category),
+    FOREIGN KEY (server_id) REFERENCES servers(server_id)
+);
+
+CREATE TABLE IF NOT EXISTS members (
+    user_id VARCHAR(26),
+    server_id VARCHAR(26),
+    level int4 NOT NULL,
+    xp INT4 NOT NULL,
+    PRIMARY KEY(user_id, server_id),
+    FOREIGN KEY (server_id) REFERENCES servers(server_id)
+);
+
+CREATE TABLE IF NOT EXISTS sales (
+    sale_id, VARCHAR(36) PRIMARY KEY,
+    cut INT2 NOT NULL,
+    expiry DATE NOT NULL
+);
+```
+
 
 ## Other Setup
 
 - You will have to make a new bot through the My Bots option in Stoat's settings
-- You will have to set up a PostgreSQL server if you are running this locally. I'm on an Arch-based distro so I followed this guide by Nick McSweeney: https://gist.github.com/NickMcSweeney/3444ce99209ee9bd9393ae6ab48599d8
-    - You can then further modify this database using either the Python library psycopg (https://www.psycopg.org/) or a database admin of your choice such as  pgAdmin or DBeaver.
-    - Note that your database must be active to interact with it so follow Nick's guide above to ensure that!
 - You must fill out the `.env` fields shown at minimum for the bot to work
     - `STOAT_ID` and `STOAT_TOKEN` can be obtained from Stoat's My Bots settings
     - `DB_NAME` and `DB_USER` are chosen by you when following Nick McSweeney's guide/setting up PostgreSQL
