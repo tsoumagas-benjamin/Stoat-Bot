@@ -565,7 +565,6 @@ class Warframe(commands.Gear, name="Warframe"):
             await ctx.send(second_half)
         else:
             await ctx.send(baro_info)
-        await ctx.send(baro_info)
 
     @commands.command()
     async def calendar(self, ctx: commands.Context):
