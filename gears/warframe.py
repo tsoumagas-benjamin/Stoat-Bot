@@ -521,7 +521,17 @@ class Warframe(commands.Gear, name="Warframe"):
         # Send the content to each of the daily warframe channels
         for channel_id in self.daily_wf_channels:
             baro_embed = await self.baro_kiteer()
-            await send_content(self.bot, channel_id[0], baro_embed)
+            # If baro embed exceeds the 2000 character limit, split in half and send both halves
+            if len(baro_embed) >= 2000:
+                first_len, second_len = divmod(len(baro_embed), 2)
+                first_half, second_half = (
+                    baro_embed[: first_len + second_len],
+                    baro_embed[first_len + second_len :],
+                )
+                await send_content(self.bot, channel_id[0], first_half)
+                await send_content(self.bot, channel_id[0], second_half)
+            else:
+                await send_content(self.bot, channel_id[0], baro_embed)
 
     async def duviri_timer(self):
         # Send the content to each of the daily warframe channels
@@ -545,6 +555,16 @@ class Warframe(commands.Gear, name="Warframe"):
     async def baro(self, ctx: commands.Context):
         """Get information on Baro Ki'Teer"""
         baro_info = await self.baro_kiteer()
+        if len(baro_info) >= 2000:
+            first_len, second_len = divmod(len(baro_info), 2)
+            first_half, second_half = (
+                baro_info[: first_len + second_len],
+                baro_info[first_len + second_len :],
+            )
+            await ctx.send(first_half)
+            await ctx.send(second_half)
+        else:
+            await ctx.send(baro_info)
         await ctx.send(baro_info)
 
     @commands.command()
